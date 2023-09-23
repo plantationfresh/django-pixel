@@ -31,13 +31,13 @@ if not SECRET_KEY:
 DEBUG = 'RENDER' not in os.environ
 
 # Docker HOST
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['localhost','127.0.0.1']
 
 # Add here your deployment HOSTS
 CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://localhost:5085']
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-if RENDER_EXTERNAL_HOSTNAME:    
+if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 # Application definition
@@ -49,9 +49,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
+    "pos",
     'theme_pixel',
     "home",
+    "order",
 ]
 
 MIDDLEWARE = [
@@ -99,15 +100,15 @@ DB_PORT     = os.getenv('DB_PORT'     , None)
 DB_NAME     = os.getenv('DB_NAME'     , None)
 
 if DB_ENGINE and DB_NAME and DB_USERNAME:
-    DATABASES = { 
+    DATABASES = {
       'default': {
-        'ENGINE'  : 'django.db.backends.' + DB_ENGINE, 
+        'ENGINE'  : 'django.db.backends.' + DB_ENGINE,
         'NAME'    : DB_NAME,
         'USER'    : DB_USERNAME,
         'PASSWORD': DB_PASS,
         'HOST'    : DB_HOST,
         'PORT'    : DB_PORT,
-        }, 
+        },
     }
 else:
     DATABASES = {
@@ -136,6 +137,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -147,7 +149,8 @@ USE_I18N = True
 
 USE_TZ = True
 
-
+SESSION_COOKIE_AGE = 86400 * 28
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 

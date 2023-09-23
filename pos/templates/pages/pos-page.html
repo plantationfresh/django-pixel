@@ -1,0 +1,182 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block content %}
+<script>
+function getId(a)
+{
+  const card = document.getElementById(String(a.id + "_card"));
+  const form = document.getElementById(String(a.id + "_input"));
+  const btn = document.getElementById("addbutton");
+  if (form.style.display === 'none')
+  {
+    form.style.display = 'block'
+    card.style.background = 'rgb(' + [60,179,113].join(',') + ')';
+  }
+  else
+  {
+    form.style.display = 'none';
+    card.style.background = 'rgb(' + [255,255,255].join(',') + ')';
+  }
+}
+
+function getqnt(x)
+{
+  let val = x.value;
+  var qntBox = document.getElementById(String(x.id + "_qnt_table"));
+  var smallBox = document.getElementById(String(x.id + "_small"));
+  var col1 = document.getElementById(String(x.id + "_col1"));
+  var col2 = document.getElementById(String(x.id + "_col2"));
+  var col3 = document.getElementById(String(x.id + "_col3"));
+  var col4 = document.getElementById(String(x.id + "_col4"));
+  var priceSmall = document.getElementById(String(x.id + "_price"));
+  var array = {{product_list|safe}};
+  var dict = {}
+  for (let i = 0; i < array.length; i++) {
+    dict[array[i]['id']] = array[i]['price'];
+  };
+  var price = parseInt(dict[x.id])*parseInt(val);
+  if(val > 0)
+  {
+      qntBox.value = String(val);
+      priceSmall.innerHTML = String(price);
+      smallBox.innerHTML = String(val);
+      col1.style.display = 'block';
+      col2.style.display = 'block';
+      col3.style.display = 'block';
+      col4.style.display = 'block';
+  }
+  else
+  {
+    qntBox.value = String(val);
+    priceSmall.innerHTML = String(price);
+    smallBox.innerHTML = String(val);
+    col1.style.display = 'none';
+    col2.style.display = 'none';
+    col3.style.display = 'none';
+    col4.style.display = 'none';
+  }
+}
+</script>
+<main>
+  {% include 'includes/pre-loader.html' %}
+  <section class="section section-lg">
+    <div class="container-fluid">
+    <div class="row">
+        <div class="col justify-content-center">
+          <!-- Title -->
+          <h2 class="h5" style="text-align:center">ITEM</h2>
+          <!-- End of Title -->
+    </div>
+    </div>
+      <div class="row mb-1">
+          {% for product in products %}
+          <div class="col-12 col-md-2 col-lg-4 mb-5 mb-lg-0">
+          <a href="#" id="{{product.id}}" onclick="getId(this)">
+          <div class="card shadow">
+            <div class="card-body" id="{{product.id}}_card">
+                <h3 class="h5 card-title mt-1">{{product.name}}</h3>
+                <p class="card-text">{{product.variant}}</p>
+            </div>
+      </div>
+      </a>
+      <div class="mb-3 pt-1" style="display:none" id="{{product.id}}_input">
+          <div class="input-group">
+              <input type="number" class="form-control" id="{{product.id}}"
+              placeholder="Quantity" onchange="getqnt(this)" min="0" name="{{product.id}}_cursor">
+          </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="mb-5 pt-4">
+    <br>
+    <div class="row">
+        <div class="col justify-content-center">
+          <!-- Title -->
+          <h2 class="h5" style="text-align:center">CART</h2>
+          <!-- End of Title -->
+    </div>
+    </div>
+    <form action = "" method = "post">
+      {% csrf_token %}
+      <div class="row pt-3">
+      <hr>
+      <div class="col-3">
+          <h2 class="h5" style="text-align:center; padding:10px;">Coffee</h2>
+      </div>
+      <div class="col-3">
+          <h2 class="h5" style="text-align:center; padding:10px;">Variant</h2>
+      </div>
+      <div class="col-3">
+          <h2 class="h5" style="text-align:center; padding:10px;">Quantity</h2>
+      </div>
+      <div class="col-3">
+          <h2 class="h5" style="text-align:center; padding:10px;">Amount</h2>
+      </div>
+      <hr>
+      </div>
+      {% for product in products %}
+      <div class="row" id="{{product.id}}_row">
+      <div class="col-3" id="{{product.id}}_col1" style="text-align:center; width: 25%; display:none; border-right: 1px solid; border-color: rgb(169,169,169);">
+        <input type="text" class="form-control" name="{{product.id}}_name" style="display:none" value="{{product.name}}"></input>
+          <small class="text-uppercase text-muted" style="text-align:center; padding:10px; width: 50%">{{product.name}}</small>
+          <hr>
+      </div>
+      <div class="col-3"  id="{{product.id}}_col2" style="text-align:center; width: 25%; display:none; border-right: 1px solid; border-color: rgb(169,169,169);">
+          <input type="text" class="form-control" name="{{product.id}}_variant" style="display:none" value="{{product.variant}}"></input>
+          <small class="text-uppercase text-muted" style="text-align:center; padding:10px;">{{product.variant}}</small>
+          <hr>
+      </div>
+      <div class="col-3" id="{{product.id}}_col3"  style="text-align:center; width: 25%; display:none; border-right: 1px solid; border-color: rgb(169,169,169);">
+          <input type="number" class="form-control" name="{{product.id}}_qnt" style="display:none" id="{{product.id}}_qnt_table"></input>
+          <small class="text-uppercase text-muted" style="text-align:center; padding:10px;" id="{{product.id}}_small"></small>
+          <hr>
+      </div>
+      <div class="col-3" id="{{product.id}}_col4"  style="text-align:center; width: 25%; display:none;">
+          <small class="text-uppercase text-muted" style="text-align:center; padding:10px;" id="{{product.id}}_price"></small>
+          <hr>
+      </div>
+      </div>
+      {% endfor %}
+  <div class="row col-3 pt-3 float-end">
+  <button type="submit" class="btn btn-success text-white" id="addbutton">Add</button>
+  </div>
+  </form>
+  <button class="btn btn-instagram mb-3" type="button" onclick="location.reload()">Clear Cart</button>
+  </div>
+  <div class="mb-5 pt-4">
+    <br>
+    <div class="row">
+        <div class="col justify-content-center">
+          <!-- Title -->
+          <h2 class="h5" style="text-align:center">Last Order</h2>
+          <!-- End of Title -->
+    </div>
+    </div>
+      <div class="table-responsive-sm pt-1">
+          <table class="table table-striped">
+              <tr>
+                  <th scope="col" id="class2">Product</th>
+                  <th scope="col" id="teacher2">Variant</th>
+                  <th scope="col" id="males2">Quantity</th>
+                  <th scope="col" id="females2">Total</th>
+              </tr>
+              {% for order in latest_order %}
+              <tr>
+                  <td>{{order.product.name}}</td>
+                  <td>{{order.product.variant}}</td>
+                  <td>{{order.quantity}}</td>
+                  <td>₹{{order.total}}/-</td>
+              </tr>
+              {% endfor %}
+              <tr>
+              <td colspan="4" class="text-right">Total Value: ₹{{cart_value}}/-</td>
+              </tr>
+          </table>
+      </div>
+  </div>
+  </div>
+  </section>
+</main>
+{% endblock content %}
